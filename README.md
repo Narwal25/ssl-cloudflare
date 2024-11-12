@@ -16,7 +16,7 @@ The script does the following:
 - **Certbot**: The script uses Certbot for SSL certificate generation.
 - **Cloudflare API Token**: You need a Cloudflare API token to perform DNS validation for SSL certificate issuance.
   
-Ensure you have a Cloudflare API token with the `Zone.DNS` permission. You can create a Cloudflare API token from [here](https://developers.cloudflare.com/fundamentals/api/keys/).
+Ensure you have a Cloudflare API token with the `Zone.DNS` permission. You can create a Cloudflare API token from [here](https://dash.cloudflare.com/profile/api-tokens).
 
 ## Installation
 
@@ -41,26 +41,47 @@ For example, if your root domain is `example.com` and your Cloudflare API token 
 export example_com="dns_cloudflare_api_token = abcdef123456"
 ```
 
+Here's an updated version of the usage instructions that include a non-interactive method to pass domains as arguments to the `./generate_ssl_cloudflare.sh` script:
+
 ## Usage
 
-1. **Run the Script**: Once the setup is done, simply run the script to generate the SSL certificate:
+### 1. **Run the Script**  
+Once the setup is done, simply run the script to generate the SSL certificate.
 
-   ```bash
-   ./generate_ssl_cloudflare.sh
-   ```
+#### Interactive Method:
+```bash
+./generate_ssl_cloudflare.sh
+```
 
-2. **Enter Domain Names**: The script will prompt you to enter the domains for which you want to generate an SSL certificate. Enter the domains separated by spaces.
+The script will prompt you to enter the domains for which you want to generate an SSL certificate.
 
-   Example input:
-   ```
-   example.com www.example.com blog.example.com
-   ```
+#### Non-Interactive Method:
+You can also pass the domain names as arguments to the script, like this:
 
-3. **Verify and Process Domains**: The script will check that all domains share the same root domain. If the root domains are different, it will exit with an error.
+```bash
+./generate_ssl_cloudflare.sh example.com www.example.com blog.example.com
+```
 
-4. **Generate SSL Certificate**: The script will use your Cloudflare API token to generate the SSL certificate via Certbot. This will involve DNS validation using Cloudflare's DNS API.
+In this case, the script will use the provided domains directly without prompting you.
 
-5. **Completion**: Once the SSL certificate generation is successful, the script will output a success message.
+### 2. **Enter Domain Names** (if using the interactive method)  
+The script will prompt you to enter the domains for which you want to generate an SSL certificate. Enter the domains separated by spaces.
+
+Example input:
+```
+example.com www.example.com blog.example.com
+```
+
+If using the non-interactive method, simply pass the domains as arguments when running the script (see above).
+
+### 3. **Verify and Process Domains**  
+The script will check that all domains share the same root domain. If the root domains are different, it will exit with an error.
+
+### 4. **Generate SSL Certificate**  
+The script will use your Cloudflare API token to generate the SSL certificate via Certbot. This will involve DNS validation using Cloudflare's DNS API.
+
+### 5. **Completion**  
+Once the SSL certificate generation is successful, the script will output a success message.
 
 ## Troubleshooting
 
@@ -71,4 +92,3 @@ export example_com="dns_cloudflare_api_token = abcdef123456"
 
 This project is licensed under the GPL-3.0 License - see the [LICENSE](LICENSE) file for details.
 
----
