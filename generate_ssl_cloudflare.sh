@@ -32,6 +32,26 @@ check_certbot_compatiblity(){
     if [ "$major_version" -lt "$required_major" ] || { [ "$major_version" -eq "$required_major" ] && [ "$minor_version" -lt "$required_minor" ]; }; then
         echo -e "\033[31m Error: Certbot version is less than 2.3. \033[0m Current version: $certbot_version"
         echo "This version is not compatible with the Cloudflare DNS token."
+    fi
+
+    if [ -x "$(command -v apt)" ]; then
+        sudo apt purge certbot python3-certbot-dns-cloudflare
+        sudo apt install python3 python3-venv libaugeas0
+        sudo python3 -m venv /opt/certbot/
+        sudo /opt/certbot/bin/pip install --upgrade pip
+        sudo /opt/certbot/bin/pip install certbot certbot-dns-cloudflare
+        sudo ln -s /opt/certbot/bin/certbot /usr/bin/certbot
+    fi
+    certbot_version=$(certbot --version | awk '{print $2}')
+    major_version=$(echo "$certbot_version" | cut -d'.' -f1)
+    minor_version=$(echo "$certbot_version" | cut -d'.' -f2)
+    
+    required_major=2
+    required_minor=3
+    
+    if [ "$major_version" -lt "$required_major" ] || { [ "$major_version" -eq "$required_major" ] && [ "$minor_version" -lt "$required_minor" ]; }; then
+        echo -e "\033[31m Error: Certbot version is less than 2.3. \033[0m Current version: $certbot_version"
+        echo "This version is not compatible with the Cloudflare DNS token."
         exit 1
     fi
 }
