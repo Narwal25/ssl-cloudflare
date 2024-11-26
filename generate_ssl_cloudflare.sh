@@ -35,8 +35,8 @@ check_certbot_compatiblity(){
     fi
 
     if [ -x "$(command -v apt)" ]; then
-        sudo apt purge certbot python3-certbot-dns-cloudflare
-        sudo apt install python3 python3-venv libaugeas0
+        sudo apt purge certbot python3-certbot-dns-cloudflare -y
+        sudo apt install python3 python3-venv libaugeas0 -y
         sudo python3 -m venv /opt/certbot/
         sudo /opt/certbot/bin/pip install --upgrade pip
         sudo /opt/certbot/bin/pip install certbot certbot-dns-cloudflare
