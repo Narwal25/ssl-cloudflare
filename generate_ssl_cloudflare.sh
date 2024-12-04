@@ -8,15 +8,53 @@ print_dns_token_message(){
 }
 
 packages_install() {
+    # Define a helper function to check and install packages
+    install_package() {
+        local package=$1
+        if ! dpkg -l | grep -q "$package" &> /dev/null && \
+           ! pacman -Q "$package" &> /dev/null && \
+           ! dnf list installed "$package" &> /dev/null; then
+            echo "Installing $package..."
+            sudo $2 "$package"
+        else
+            echo "$package is already installed."
+        fi
+    }
+
+    # Check which package manager is available
     if [ -x "$(command -v pacman)" ]; then
-        sudo pacman -S certbot python-pip sed gawk newt python-certbot-dns-cloudflare --no-confirm
+        # Arch Linux / Pacman-based
+        echo "Using pacman to install packages..."
+        install_package "certbot" "pacman -S --noconfirm"
+        install_package "python-pip" "pacman -S --noconfirm"
+        install_package "sed" "pacman -S --noconfirm"
+        install_package "gawk" "pacman -S --noconfirm"
+        install_package "newt" "pacman -S --noconfirm"
+        install_package "python-certbot-dns-cloudflare" "pacman -S --noconfirm"
+
     elif [ -x "$(command -v apt)" ]; then
+        # Debian / Ubuntu / Apt-based
+        echo "Using apt to install packages..."
         sudo apt update
-        sudo apt install certbot python3-pip sed gawk whiptail python3-certbot-dns-cloudflare -y
+        install_package "certbot" "apt install -y"
+        install_package "python3-pip" "apt install -y"
+        install_package "sed" "apt install -y"
+        install_package "gawk" "apt install -y"
+        install_package "whiptail" "apt install -y"
+        install_package "python3-certbot-dns-cloudflare" "apt install -y"
+
     elif [ -x "$(command -v dnf)" ]; then
-        sudo dnf install certbot python3-pip sed gawk whiptail python3-certbot-dns-cloudflare -y
+        # Fedora / RHEL / DNF-based
+        echo "Using dnf to install packages..."
+        install_package "certbot" "dnf install -y"
+        install_package "python3-pip" "dnf install -y"
+        install_package "sed" "dnf install -y"
+        install_package "gawk" "dnf install -y"
+        install_package "whiptail" "dnf install -y"
+        install_package "python3-certbot-dns-cloudflare" "dnf install -y"
+
     else
-        echo -e "\033[31m FAILED TO INSTALL PACKAGE: Package manager not found. You must manually install \033[0m"
+        echo -e "\033[31m FAILED TO INSTALL PACKAGE: Package manager not found. You must manually install.\033[0m"
         exit 1
     fi
 }
@@ -35,7 +73,7 @@ check_certbot_compatiblity(){
     fi
 
     if [ -x "$(command -v apt)" ]; then
-        sudo apt purge certbot python3-certbot-dns-cloudflare -y
+        sudo apt remove certbot python3-certbot-dns-cloudflare -y
         sudo apt install python3 python3-venv libaugeas0 -y
         sudo python3 -m venv /opt/certbot/
         sudo /opt/certbot/bin/pip install --upgrade pip
